@@ -1,0 +1,31 @@
+@extends('layouts.app')
+
+@section('title', 'Edit Category')
+
+@section('content')
+    <div class="mt-6 max-w-xl">
+        <a class="text-sm underline" href="{{ route('admin.categories.index') }}">← Back</a>
+
+        <div class="mt-4 bg-white border rounded-2xl shadow-sm p-6">
+            <h1 class="text-xl font-bold mb-4">Edit Category</h1>
+
+            @if ($errors->any())
+                <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-800">
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('admin.categories.update', $category) }}">
+                @csrf
+                @method('PUT')
+
+                <label class="block mb-2 font-semibold">Name</label>
+                <input class="w-full border rounded-xl p-2" name="name" value="{{ old('name', $category->name) }}" required>
+
+                <button class="mt-4 bg-black text-white px-4 py-2 rounded-xl">Update</button>
+            </form>
+        </div>
+    </div>
+@endsection
