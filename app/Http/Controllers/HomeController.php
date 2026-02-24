@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
@@ -19,12 +20,16 @@ class HomeController extends Controller
         $isOpen = $now->between($openTime, Carbon::createFromTime(23, 59, 59, 'Asia/Baghdad'))
             || $now->between(Carbon::createFromTime(0, 0, 0, 'Asia/Baghdad'), $closeTime);
 
-        $categories = Category::orderBy('name')->take(8)->get();
+        $categories = Cache::remember('home.categories', 300, function () {
+            return Category::orderBy('name')->take(8)->get();
+        });
 
-        $latestProducts = Product::with('categories')
-            ->latest()
-            ->take(6)
-            ->get();
+        $latestProducts = Cache::remember('home.latest_products', 300, function () {
+            return Product::with('categories')
+                ->latest()
+                ->take(6)
+                ->get();
+        });
 
         return view('home', compact('isOpen', 'categories', 'latestProducts'));
     }

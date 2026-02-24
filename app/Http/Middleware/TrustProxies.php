@@ -12,7 +12,13 @@ class TrustProxies extends Middleware
      *
      * @var array<int, string>|string|null
      */
-    protected $proxies;
+    protected $proxies = '*';
+
+    public function __construct()
+    {
+        $trusted = env('TRUSTED_PROXIES', '*');
+        $this->proxies = $trusted === '*' ? '*' : array_filter(array_map('trim', explode(',', $trusted)));
+    }
 
     /**
      * The headers that should be used to detect proxies.

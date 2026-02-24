@@ -6,32 +6,40 @@
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <h1 class="text-2xl font-bold">Products</h1>
 
-        <div class="flex gap-3">
+        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <a href="{{ route('admin.categories.index') }}"
-               class="px-4 py-2 rounded-xl border font-semibold hover:bg-gray-50 transition">
+               class="px-4 py-2 rounded-xl border font-semibold hover:bg-gray-50 transition text-center">
                 Manage Categories
             </a>
 
             <a href="{{ route('admin.products.create') }}"
-               class="px-4 py-2 rounded-xl bg-black text-white font-semibold hover:opacity-90 transition">
+               class="px-4 py-2 rounded-xl bg-black text-white font-semibold hover:opacity-90 transition text-center">
                 + Add Product
             </a>
         </div>
     </div>
 
     <div class="bg-white border rounded-3xl shadow-sm overflow-hidden">
-        <table class="w-full">
+        <div class="overflow-x-auto">
+        <table class="w-full min-w-[720px]">
             <thead class="bg-gray-50">
             <tr>
                 <th class="p-4 text-left">Product</th>
                 <th class="p-4 text-left">Categories</th>
                 <th class="p-4 text-left">Price</th>
+                <th class="p-4 text-left">Stock</th>
+                <th class="p-4 text-left">Views</th>
+                <th class="p-4 text-left">Status</th>
                 <th class="p-4 text-left">Actions</th>
             </tr>
             </thead>
 
             <tbody>
             @forelse($products as $product)
+                @php
+                    $isAvailable = (bool) ($product->is_available ?? true);
+                    $inStock = (int) ($product->stock ?? 0) > 0;
+                @endphp
                 <tr class="border-t">
                     <td class="p-4 font-semibold">
                         {{ $product->name }}
@@ -52,11 +60,35 @@
                     </td>
 
                     <td class="p-4 font-semibold">
-                        ${{ number_format($product->price, 2) }}
+                        <x-money :amount="$product->price" />
+                    </td>
+
+                    <td class="p-4 font-semibold">
+                        {{ $product->stock ?? 0 }}
+                    </td>
+
+                    <td class="p-4 font-semibold">
+                        {{ $product->views ?? 0 }}
                     </td>
 
                     <td class="p-4">
-                        <div class="flex gap-4">
+                        @if($isAvailable && $inStock)
+                            <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-800">
+                                Available
+                            </span>
+                        @elseif(!$isAvailable)
+                            <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700">
+                                Hidden
+                            </span>
+                        @else
+                            <span class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm font-semibold text-red-800">
+                                Out of stock
+                            </span>
+                        @endif
+                    </td>
+
+                    <td class="p-4">
+                        <div class="flex flex-wrap gap-4">
                             <a href="{{ route('admin.products.edit', $product) }}"
                                class="font-semibold underline">
                                 Edit
@@ -76,13 +108,14 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="p-6 text-center text-gray-500">
+                    <td colspan="7" class="p-6 text-center text-gray-500">
                         No products yet.
                     </td>
                 </tr>
             @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 
     <div class="mt-6">

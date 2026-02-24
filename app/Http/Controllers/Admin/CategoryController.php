@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class CategoryController extends Controller
 {
@@ -31,6 +32,9 @@ class CategoryController extends Controller
             'slug' => Str::slug($validated['name']),
         ]);
 
+        Cache::forget('home.categories');
+        Cache::forget('products.categories');
+
         return redirect()->route('admin.categories.index')->with('success', 'Category created');
     }
 
@@ -50,12 +54,17 @@ class CategoryController extends Controller
             'slug' => Str::slug($validated['name']),
         ]);
 
+        Cache::forget('home.categories');
+        Cache::forget('products.categories');
+
         return redirect()->route('admin.categories.index')->with('success', 'Category updated');
     }
 
     public function destroy(Category $category)
     {
         $category->delete();
+        Cache::forget('home.categories');
+        Cache::forget('products.categories');
         return redirect()->route('admin.categories.index')->with('success', 'Category deleted');
     }
 }

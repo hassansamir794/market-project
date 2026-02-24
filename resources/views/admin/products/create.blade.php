@@ -35,12 +35,44 @@
                 </div>
 
                 <div>
-                    <label class="block mb-1 font-semibold">Price</label>
+                    <label class="block mb-1 font-semibold">Stock</label>
+                    <input
+                        class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-black/20"
+                        name="stock"
+                        type="number"
+                        step="1"
+                        min="0"
+                        value="{{ old('stock', 0) }}"
+                        required
+                    >
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <input
+                        id="is_available"
+                        name="is_available"
+                        type="checkbox"
+                        value="1"
+                        class="h-4 w-4"
+                        @checked(old('is_available', true))
+                    >
+                    <label for="is_available" class="font-semibold">Available for sale</label>
+                </div>
+
+                @php
+                    $currencySymbol = config('currency.symbol', 'IQD');
+                    $currencyDecimals = (int) config('currency.decimals', 0);
+                    $priceStep = $currencyDecimals > 0 ? '0.01' : '1';
+                @endphp
+
+                <div>
+                    <label class="block mb-1 font-semibold">Price ({{ $currencySymbol }})</label>
                     <input
                         class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-black/20"
                         name="price"
                         type="number"
-                        step="0.01"
+                        step="{{ $priceStep }}"
+                        min="0"
                         value="{{ old('price') }}"
                         required
                     >
@@ -81,7 +113,7 @@
                     <input class="w-full" name="image" type="file" accept="image/*">
                 </div>
 
-                <div class="flex gap-3">
+                <div class="flex flex-col sm:flex-row gap-3">
                     <button class="px-5 py-3 rounded-xl bg-black text-white font-semibold hover:opacity-90 transition" type="submit">
                         Save
                     </button>

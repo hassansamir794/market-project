@@ -23,6 +23,12 @@
 
             @php
                 $selected = old('category_ids', $product->categories->pluck('id')->toArray());
+                $currencySymbol = config('currency.symbol', 'IQD');
+                $currencyDecimals = (int) config('currency.decimals', 0);
+                $priceStep = $currencyDecimals > 0 ? '0.01' : '1';
+                $rate = (float) config('currency.rate', 1);
+                $safeRate = $rate > 0 ? $rate : 1;
+                $displayPrice = $product->price * $safeRate;
             @endphp
 
             <form method="POST" action="{{ route('admin.products.update', $product) }}" enctype="multipart/form-data" class="space-y-5">
@@ -40,13 +46,39 @@
                 </div>
 
                 <div>
-                    <label class="block mb-1 font-semibold">Price</label>
+                    <label class="block mb-1 font-semibold">Stock</label>
+                    <input
+                        class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-black/20"
+                        name="stock"
+                        type="number"
+                        step="1"
+                        min="0"
+                        value="{{ old('stock', $product->stock ?? 0) }}"
+                        required
+                    >
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <input
+                        id="is_available"
+                        name="is_available"
+                        type="checkbox"
+                        value="1"
+                        class="h-4 w-4"
+                        @checked(old('is_available', (bool) ($product->is_available ?? true)))
+                    >
+                    <label for="is_available" class="font-semibold">Available for sale</label>
+                </div>
+
+                <div>
+                    <label class="block mb-1 font-semibold">Price ({{ $currencySymbol }})</label>
                     <input
                         class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-black/20"
                         name="price"
                         type="number"
-                        step="0.01"
-                        value="{{ old('price', $product->price) }}"
+                        step="{{ $priceStep }}"
+                        min="0"
+                        value="{{ old('price', $displayPrice) }}"
                         required
                     >
                 </div>
@@ -94,7 +126,7 @@
                     @endif
                 </div>
 
-                <div class="flex gap-3">
+                <div class="flex flex-col sm:flex-row gap-3">
                     <button class="px-5 py-3 rounded-xl bg-black text-white font-semibold hover:opacity-90 transition" type="submit">
                         Update
                     </button>

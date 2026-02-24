@@ -14,11 +14,24 @@ class Product extends Model
         'price',
         'description',
         'image',
+        'stock',
+        'is_available',
+        'views',
     ];
 
     // ✅ Product can belong to many categories
     public function categories()
     {
         return $this->belongsToMany(Category::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function orderRequests()
+    {
+        return $this->hasMany(OrderRequest::class);
     }
 }
