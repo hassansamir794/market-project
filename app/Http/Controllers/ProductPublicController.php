@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Services\AnalyticsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -12,6 +13,7 @@ class ProductPublicController extends Controller
     public function index(Request $request)
     {
         $q = $request->query('q');
+        AnalyticsService::trackSearch(is_string($q) ? $q : null);
         $category = $request->query('category'); // slug
         $minPriceInput = $request->query('min_price');
         $maxPriceInput = $request->query('max_price');

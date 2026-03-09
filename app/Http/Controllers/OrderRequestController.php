@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendAdminOrderRequestNotificationsJob;
 use App\Models\OrderRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 
 class OrderRequestController extends Controller
 {
@@ -23,37 +23,14 @@ class OrderRequestController extends Controller
 
         OrderRequest::create($validated);
 
-        $adminEmail = env('ADMIN_NOTIFY_EMAIL');
-        if ($adminEmail) {
-            $subject = 'New order request';
-            $adminWhatsapp = env('ADMIN_WHATSAPP_NUMBER');
-            $waLink = null;
-            if ($adminWhatsapp) {
-                $waMessage = urlencode(
-                    "New order request\n"
-                    . "Product: {$product->name} (ID: {$product->id})\n"
-                    . "Name: {$validated['name']}\n"
-                    . "Phone: {$validated['phone']}\n"
-                    . "Quantity: {$validated['quantity']}\n"
-                    . "Note: " . ($validated['note'] ?? '-')
-                );
-                $waLink = "https://wa.me/{$adminWhatsapp}?text={$waMessage}";
-            }
-            $body = "Product: {$product->name} (ID: {$product->id})\n"
-                . "Name: {$validated['name']}\n"
-                . "Phone: {$validated['phone']}\n"
-                . "Quantity: {$validated['quantity']}\n"
-                . "Note: " . ($validated['note'] ?? '-') . "\n"
-                . "Admin: " . route('admin.order-requests.index')
-                . ($waLink ? "\nWhatsApp: {$waLink}" : '');
-            try {
-                Mail::raw($body, function ($message) use ($adminEmail, $subject) {
-                    $message->to($adminEmail)->subject($subject);
-                });
-            } catch (\Throwable $e) {
-                // ignore notification errors
-            }
-        }
+        SendAdminOrderRequestNotificationsJob::dispatch(
+            $product->id,
+            $product->name,
+            $validated['name'],
+            $validated['phone'],
+            (int) $validated['quantity'],
+            $validated['note'] ?? null
+        );
 
         return redirect()
             ->back()

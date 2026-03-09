@@ -4,10 +4,10 @@
 @section('meta_description', $metaDescription ?? 'Browse all products at Market. Filter by category, name, and price range.')
 
 @section('content')
-    <section class="mt-6">
-        <div class="rounded-3xl bg-gradient-to-br from-black to-gray-800 text-white p-6 sm:p-10 shadow-sm">
+    <section class="mt-3">
+        <div class="rounded-3xl bg-gradient-to-br from-slate-950 via-slate-800 to-slate-700 text-white p-6 sm:p-10 shadow-[0_18px_40px_rgba(15,23,42,0.35)]">
             <div class="max-w-3xl">
-                <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">Find what you need, fast.</h1>
+                <h1 class="text-2xl sm:text-4xl font-bold tracking-tight">Find what you need, fast.</h1>
                 @if(!empty($categoryModel))
                     <p class="mt-2 text-white/80">Category: <span class="font-semibold">{{ $categoryModel->name }}</span></p>
                 @endif
@@ -68,13 +68,13 @@
                     </select>
 
                     <div class="sm:col-span-2 lg:col-span-6 flex flex-col sm:flex-row gap-3">
-                        <button class="rounded-xl bg-white text-black px-5 py-3 font-semibold hover:opacity-90 transition">
+                        <button class="rounded-xl bg-white text-black px-5 py-3 font-semibold hover:opacity-90 transition w-full sm:w-auto shadow-sm">
                             {{ __('messages.search') }}
                         </button>
 
                         @if(!empty($q) || !empty($category) || !empty($minPrice) || !empty($maxPrice))
                             <a href="{{ route('products.index') }}"
-                               class="rounded-xl px-5 py-3 font-semibold ring-1 ring-white/20 hover:bg-white/10 transition text-center">
+                               class="rounded-xl px-5 py-3 font-semibold ring-1 ring-white/20 hover:bg-white/10 transition text-center w-full sm:w-auto">
                                 {{ __('messages.clear_filters') }}
                             </a>
                         @endif
@@ -115,27 +115,27 @@
         <div class="mt-3 flex flex-wrap gap-2 text-sm">
             @if(!empty($q))
                 <a href="{{ $remove('q') }}" class="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 border">
-                    Search: {{ $q }} ✕
+                    Search: {{ $q }} x
                 </a>
             @endif
             @if(!empty($category))
                 <a href="{{ $remove('category') }}" class="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 border">
-                    Category: {{ optional($categories->firstWhere('slug', $category))->name ?? $category }} ✕
+                    Category: {{ optional($categories->firstWhere('slug', $category))->name ?? $category }} x
                 </a>
             @endif
             @if(is_numeric($minPriceInput))
                 <a href="{{ $remove('min_price') }}" class="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 border">
-                    Min: {{ number_format((float) $minPriceInput, 0) }} ✕
+                    Min: {{ number_format((float) $minPriceInput, 0) }} x
                 </a>
             @endif
             @if(is_numeric($maxPriceInput))
                 <a href="{{ $remove('max_price') }}" class="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 border">
-                    Max: {{ number_format((float) $maxPriceInput, 0) }} ✕
+                    Max: {{ number_format((float) $maxPriceInput, 0) }} x
                 </a>
             @endif
             @if(($sort ?? 'newest') !== 'newest')
                 <a href="{{ $remove('sort') }}" class="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 border">
-                    Sort: {{ $sort === 'price_low' ? __('messages.sort_price_low') : ($sort === 'price_high' ? __('messages.sort_price_high') : __('messages.sort_most_viewed')) }} ✕
+                    Sort: {{ $sort === 'price_low' ? __('messages.sort_price_low') : ($sort === 'price_high' ? __('messages.sort_price_high') : __('messages.sort_most_viewed')) }} x
                 </a>
             @endif
             <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 rounded-full bg-black text-white px-3 py-1">
@@ -145,27 +145,28 @@
     @endif
 
     <section class="mt-4">
-        <div class="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-3 gap-5">
             @forelse($products as $product)
                 @php
                     $isAvailable = (bool) ($product->is_available ?? true);
                     $inStock = (int) ($product->stock ?? 0) > 0;
                 @endphp
                 <a href="{{ route('products.show', $product) }}"
-                   class="group glass-card hover:shadow-md transition overflow-hidden">
+                   class="group glass-card hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.18)] transition duration-200 overflow-hidden">
 
-                    <div class="aspect-[1/1] sm:aspect-[4/3] bg-gray-100 overflow-hidden">
+                    <div class="relative aspect-[1/1] sm:aspect-[4/3] bg-gray-100 overflow-hidden">
                         <x-product-image
                             :path="$product->image"
                             :alt="$product->name"
-                            class="h-full w-full object-cover group-hover:scale-[1.02] transition"
+                            class="h-full w-full object-cover group-hover:scale-[1.04] transition duration-300"
                         />
+                        <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/20 to-transparent"></div>
                     </div>
 
                     <div class="p-4">
                         <div class="flex items-start justify-between gap-3">
                             <div class="font-semibold text-gray-900 line-clamp-1">{{ $product->name }}</div>
-                            <div class="shrink-0 rounded-xl bg-black text-white px-3 py-1 text-sm font-semibold">
+                            <div class="shrink-0 rounded-xl bg-slate-900 text-white px-3 py-1 text-sm font-semibold shadow-sm">
                                 <x-money :amount="$product->price" />
                             </div>
                         </div>
@@ -179,10 +180,10 @@
                         @if($product->categories?->count())
                             <div class="mt-2 flex flex-wrap gap-2">
                                 @foreach($product->categories as $cat)
-                                    <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-                                        {{ $cat->name }}
-                                    </span>
-                                @endforeach
+                                <span class="chip">
+                                    {{ $cat->name }}
+                                </span>
+                            @endforeach
                             </div>
                         @endif
 
@@ -192,7 +193,7 @@
                             </p>
                         @endif
 
-                <div class="mt-4 text-sm font-semibold text-gray-900">
+                <div class="mt-4 text-sm font-semibold text-slate-800 group-hover:text-black">
                     {{ __('messages.view_details') }}
                 </div>
             </div>
@@ -202,7 +203,7 @@
             <p class="font-semibold text-gray-900">{{ __('messages.no_products') }}</p>
             <p class="mt-2">Try a different keyword, remove category, or widen your price range.</p>
             <div class="mt-4">
-                <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center rounded-xl bg-black text-white px-4 py-2 font-semibold">
+                <a href="{{ route('products.index') }}" class="btn-primary">
                     {{ __('messages.reset_filters') }}
                 </a>
             </div>

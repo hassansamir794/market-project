@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendAdminReviewNotificationsJob;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
 
 class ReviewController extends Controller
@@ -21,22 +21,13 @@ class ReviewController extends Controller
 
         Cache::forget('product.show.' . $product->id);
 
-        $adminEmail = env('ADMIN_NOTIFY_EMAIL');
-        if ($adminEmail) {
-            $subject = 'New review submitted';
-            $body = "Product: {$product->name} (ID: {$product->id})\n"
-                . "Name: {$validated['name']}\n"
-                . "Rating: {$validated['rating']}\n"
-                . "Comment: " . ($validated['comment'] ?? '-') . "\n"
-                . "Admin: " . route('admin.reviews.index');
-            try {
-                Mail::raw($body, function ($message) use ($adminEmail, $subject) {
-                    $message->to($adminEmail)->subject($subject);
-                });
-            } catch (\Throwable $e) {
-                // ignore notification errors
-            }
-        }
+        SendAdminReviewNotificationsJob::dispatch(
+            $product->id,
+            $product->name,
+            $validated['name'],
+            (int) $validated['rating'],
+            $validated['comment'] ?? null
+        );
 
         return redirect()
             ->back()

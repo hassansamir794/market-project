@@ -5,6 +5,7 @@ A Laravel + Blade + Tailwind web app for a local market with:
 - Category filtering and search
 - Admin product/category management
 - Mobile-friendly layout and navigation
+- Admin notification center for order requests and reviews
 
 ## Requirements
 
@@ -102,6 +103,29 @@ Also verify:
 - `public/hot` is not present on production server.
 - Only `public/` is web-accessible.
 - Regular database and `storage/app/public` backups are configured.
+- Queue worker is running (`php artisan queue:work`) if async jobs are enabled.
+
+Optional admin push notifications:
+```env
+ADMIN_NOTIFY_EMAIL=
+ADMIN_WHATSAPP_NUMBER=
+ADMIN_NOTIFICATION_WEBHOOK_URL=
+ADMIN_TELEGRAM_BOT_TOKEN=
+ADMIN_TELEGRAM_CHAT_ID=
+LOW_STOCK_THRESHOLD=5
+```
+
+## Inventory Alerts
+
+Scheduled commands:
+- `inventory:alert-low-stock` daily at 10:00
+- `inventory:weekly-report` weekly on Saturday at 08:30
+
+Manual run:
+```bash
+php artisan inventory:alert-low-stock
+php artisan inventory:weekly-report
+```
 
 ## Main Routes
 

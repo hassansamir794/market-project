@@ -15,6 +15,13 @@ class Review extends Model
         'rating',
         'comment',
         'is_approved',
+        'admin_seen_at',
+    ];
+
+    protected $casts = [
+        'rating' => 'integer',
+        'is_approved' => 'boolean',
+        'admin_seen_at' => 'datetime',
     ];
 
     public function product()

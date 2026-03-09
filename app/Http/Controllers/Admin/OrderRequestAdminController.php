@@ -29,6 +29,7 @@ class OrderRequestAdminController extends Controller
 
         $orderRequest->update([
             'status' => $validated['status'],
+            'admin_seen_at' => $orderRequest->admin_seen_at ?: now(),
         ]);
 
         return redirect()
@@ -59,7 +60,10 @@ class OrderRequestAdminController extends Controller
             $query->delete();
             $message = 'Order requests deleted.';
         } else {
-            $query->update(['status' => $validated['action']]);
+            $query->update([
+                'status' => $validated['action'],
+                'admin_seen_at' => now(),
+            ]);
             $message = 'Order requests updated.';
         }
 

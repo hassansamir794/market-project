@@ -12,12 +12,20 @@ class TrustProxies extends Middleware
      *
      * @var array<int, string>|string|null
      */
-    protected $proxies = '*';
+    protected $proxies = null;
 
     public function __construct()
     {
-        $trusted = env('TRUSTED_PROXIES', '*');
-        $this->proxies = $trusted === '*' ? '*' : array_filter(array_map('trim', explode(',', $trusted)));
+        $trusted = trim((string) env('TRUSTED_PROXIES', ''));
+
+        if ($trusted === '') {
+            $this->proxies = null;
+            return;
+        }
+
+        $this->proxies = $trusted === '*'
+            ? '*'
+            : array_values(array_filter(array_map('trim', explode(',', $trusted))));
     }
 
     /**

@@ -8,7 +8,7 @@
             ← Back
         </a>
 
-        <div class="mt-4 bg-white border rounded-3xl shadow-sm p-6">
+        <div class="mt-4 form-panel">
             <h1 class="text-2xl font-bold mb-6">Edit Product</h1>
 
             @if ($errors->any())
@@ -36,9 +36,9 @@
                 @method('PUT')
 
                 <div>
-                    <label class="block mb-1 font-semibold">Name</label>
+                    <label class="field-label">Name</label>
                     <input
-                        class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-black/20"
+                        class="input-clean"
                         name="name"
                         value="{{ old('name', $product->name) }}"
                         required
@@ -46,9 +46,9 @@
                 </div>
 
                 <div>
-                    <label class="block mb-1 font-semibold">Stock</label>
+                    <label class="field-label">Stock</label>
                     <input
-                        class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-black/20"
+                        class="input-clean"
                         name="stock"
                         type="number"
                         step="1"
@@ -71,9 +71,9 @@
                 </div>
 
                 <div>
-                    <label class="block mb-1 font-semibold">Price ({{ $currencySymbol }})</label>
+                    <label class="field-label">Price ({{ $currencySymbol }})</label>
                     <input
-                        class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-black/20"
+                        class="input-clean"
                         name="price"
                         type="number"
                         step="{{ $priceStep }}"
@@ -84,9 +84,9 @@
                 </div>
 
                 <div>
-                    <label class="block mb-1 font-semibold">Description</label>
+                    <label class="field-label">Description</label>
                     <textarea
-                        class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-black/20"
+                        class="textarea-clean"
                         name="description"
                         rows="4"
                     >{{ old('description', $product->description) }}</textarea>
@@ -94,27 +94,26 @@
 
                 {{-- ✅ Categories --}}
                 <div>
-                    <label class="block mb-1 font-semibold">Categories</label>
+                    <label class="field-label">Categories</label>
 
-                    <select
-                        name="category_ids[]"
-                        multiple
-                        class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-black/20"
-                    >
+                    <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
                         @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" @selected(in_array($cat->id, $selected))>
-                                {{ $cat->name }}
-                            </option>
+                            <label class="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2">
+                                <input
+                                    type="checkbox"
+                                    name="category_ids[]"
+                                    value="{{ $cat->id }}"
+                                    class="h-4 w-4"
+                                    @checked(in_array($cat->id, $selected))
+                                >
+                                <span class="text-sm font-medium text-gray-800">{{ $cat->name }}</span>
+                            </label>
                         @endforeach
-                    </select>
-
-                    <p class="text-sm text-gray-500 mt-2">
-                        Tip: Hold <strong>Ctrl</strong> (Windows) to select multiple categories.
-                    </p>
+                    </div>
                 </div>
 
                 <div>
-                    <label class="block mb-1 font-semibold">Replace Image (optional)</label>
+                    <label class="field-label">Replace Image (optional)</label>
                     <input class="w-full" name="image" type="file" accept="image/*">
 
                     @if($product->image)
@@ -127,11 +126,11 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-3">
-                    <button class="px-5 py-3 rounded-xl bg-black text-white font-semibold hover:opacity-90 transition" type="submit">
+                    <button class="btn-primary" type="submit">
                         Update
                     </button>
 
-                    <a class="px-5 py-3 rounded-xl border font-semibold hover:bg-gray-50 transition"
+                    <a class="btn-outline"
                        href="{{ route('admin.products.index') }}">
                         Cancel
                     </a>

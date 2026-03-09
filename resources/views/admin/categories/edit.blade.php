@@ -4,9 +4,9 @@
 
 @section('content')
     <div class="mt-6 max-w-xl">
-        <a class="text-sm underline" href="{{ route('admin.categories.index') }}">← Back</a>
+        <a class="text-sm text-gray-600 hover:text-gray-900" href="{{ route('admin.categories.index') }}">Back</a>
 
-        <div class="mt-4 bg-white border rounded-2xl shadow-sm p-6">
+        <div class="mt-4 form-panel">
             <h1 class="text-xl font-bold mb-4">Edit Category</h1>
 
             @if ($errors->any())
@@ -21,10 +21,10 @@
                 @csrf
                 @method('PUT')
 
-                <label class="block mb-2 font-semibold">Name</label>
-                <input class="w-full border rounded-xl p-2" name="name" value="{{ old('name', $category->name) }}" required>
+                <label class="field-label">Name</label>
+                <input class="input-clean" name="name" value="{{ old('name', $category->name) }}" required>
 
-                <button class="mt-4 bg-black text-white px-4 py-2 rounded-xl">Update</button>
+                <button class="mt-4 btn-primary">Update</button>
             </form>
         </div>
     </div>

@@ -16,6 +16,12 @@ class OrderRequest extends Model
         'quantity',
         'note',
         'status',
+        'admin_seen_at',
+    ];
+
+    protected $casts = [
+        'quantity' => 'integer',
+        'admin_seen_at' => 'datetime',
     ];
 
     public function product()

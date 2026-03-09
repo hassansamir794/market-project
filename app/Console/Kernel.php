@@ -15,6 +15,8 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         $schedule->command('db:backup')->dailyAt('02:30');
         $schedule->command('monitor:ping')->everyFiveMinutes();
+        $schedule->command('inventory:alert-low-stock')->dailyAt('10:00');
+        $schedule->command('inventory:weekly-report')->weeklyOn(6, '08:30');
     }
 
     /**

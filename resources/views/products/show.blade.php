@@ -15,7 +15,7 @@
                 || $now->between(Carbon::createFromTime(0, 0, 0, 'Asia/Baghdad'), $closeTime);
 @endphp
 
-    <div class="mt-6">
+    <div class="mt-6 pb-24 sm:pb-0">
         @php
             $isAvailable = (bool) ($product->is_available ?? true);
             $inStock = (int) ($product->stock ?? 0) > 0;
@@ -100,7 +100,7 @@
                     <div class="mt-4 flex flex-wrap gap-2">
                         @foreach($product->categories as $cat)
                             <a href="{{ route('categories.show', $cat->slug) }}"
-                               class="inline-flex items-center rounded-full bg-white/70 px-3 py-1 text-sm font-semibold text-gray-700 hover:bg-white transition">
+                               class="chip">
                                 {{ $cat->name }}
                             </a>
                         @endforeach
@@ -117,12 +117,12 @@
                 <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <a target="_blank"
                        href="{{ config('contact.maps_url') }}"
-                       class="inline-flex items-center justify-center rounded-xl glass-card bg-white/70 px-4 py-3 font-semibold hover:bg-white transition">
+                       class="btn-outline w-full">
                         {{ __('messages.location') }}
                     </a>
 
                     <a href="tel:{{ config('contact.phone') }}"
-                       class="inline-flex items-center justify-center rounded-xl bg-black text-white px-4 py-3 font-semibold hover:opacity-90 transition">
+                       class="btn-primary w-full">
                         {{ __('messages.call_market') }}
                     </a>
                 </div>
@@ -150,7 +150,7 @@
                 @if(!empty($waNumber))
                     <a target="_blank"
                        href="https://wa.me/{{ $waNumber }}?text={{ $waMessage }}"
-                       class="mt-4 inline-flex items-center justify-center rounded-xl bg-green-600 text-white px-4 py-3 font-semibold hover:opacity-90 transition">
+                       class="mt-4 inline-flex items-center justify-center rounded-xl bg-green-600 text-white px-4 py-3 font-semibold hover:opacity-90 transition w-full sm:w-auto shadow-sm">
                         {{ __('messages.order_whatsapp') }}
                     </a>
                 @endif
@@ -179,21 +179,21 @@
                 @csrf
                 <div>
                     <label class="block mb-1 font-semibold">{{ __('messages.your_name') }}</label>
-                    <input class="w-full border rounded-xl p-3" name="name" value="{{ old('name') }}" required>
+                    <input class="input-clean" name="name" value="{{ old('name') }}" required>
                 </div>
                 <div>
                     <label class="block mb-1 font-semibold">{{ __('messages.phone') }}</label>
-                    <input class="w-full border rounded-xl p-3" name="phone" value="{{ old('phone') }}" required>
+                    <input class="input-clean" name="phone" value="{{ old('phone') }}" required>
                 </div>
                 <div>
                     <label class="block mb-1 font-semibold">{{ __('messages.quantity') }}</label>
-                    <input class="w-full border rounded-xl p-3" name="quantity" type="number" min="1" step="1" value="{{ old('quantity', 1) }}" required>
+                    <input class="input-clean" name="quantity" type="number" min="1" step="1" value="{{ old('quantity', 1) }}" required>
                 </div>
                 <div>
                     <label class="block mb-1 font-semibold">{{ __('messages.note_optional') }}</label>
-                    <textarea class="w-full border rounded-xl p-3" name="note" rows="3">{{ old('note') }}</textarea>
+                    <textarea class="textarea-clean" name="note" rows="3">{{ old('note') }}</textarea>
                 </div>
-                <button class="px-5 py-3 rounded-xl bg-black text-white font-semibold">{{ __('messages.send_request') }}</button>
+                <button class="btn-primary">{{ __('messages.send_request') }}</button>
             </form>
         </div>
 
@@ -210,17 +210,17 @@
                 @csrf
                 <div>
                     <label class="block mb-1 font-semibold">{{ __('messages.your_name') }}</label>
-                    <input class="w-full border rounded-xl p-3" name="name" value="{{ old('name') }}" required>
+                    <input class="input-clean" name="name" value="{{ old('name') }}" required>
                 </div>
                 <div>
                     <label class="block mb-1 font-semibold">{{ __('messages.rating') }} (1-5)</label>
-                    <input class="w-full border rounded-xl p-3" name="rating" type="number" min="1" max="5" step="1" value="{{ old('rating', 5) }}" required>
+                    <input class="input-clean" name="rating" type="number" min="1" max="5" step="1" value="{{ old('rating', 5) }}" required>
                 </div>
                 <div>
                     <label class="block mb-1 font-semibold">{{ __('messages.note_optional') }}</label>
-                    <textarea class="w-full border rounded-xl p-3" name="comment" rows="4">{{ old('comment') }}</textarea>
+                    <textarea class="textarea-clean" name="comment" rows="4">{{ old('comment') }}</textarea>
                 </div>
-                <button class="px-5 py-3 rounded-xl bg-black text-white font-semibold">{{ __('messages.submit_review') }}</button>
+                <button class="btn-primary">{{ __('messages.submit_review') }}</button>
             </form>
         </div>
 

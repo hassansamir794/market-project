@@ -26,6 +26,7 @@ class ReviewAdminController extends Controller
 
         $review->update([
             'is_approved' => (bool) $validated['is_approved'],
+            'admin_seen_at' => $review->admin_seen_at ?: now(),
         ]);
 
         Cache::forget('product.show.' . $review->product_id);
@@ -58,10 +59,16 @@ class ReviewAdminController extends Controller
         $productIds = $query->pluck('product_id')->unique();
 
         if ($validated['action'] === 'approve') {
-            $query->update(['is_approved' => true]);
+            $query->update([
+                'is_approved' => true,
+                'admin_seen_at' => now(),
+            ]);
             $message = 'Reviews approved.';
         } elseif ($validated['action'] === 'hide') {
-            $query->update(['is_approved' => false]);
+            $query->update([
+                'is_approved' => false,
+                'admin_seen_at' => now(),
+            ]);
             $message = 'Reviews hidden.';
         } else {
             $query->delete();

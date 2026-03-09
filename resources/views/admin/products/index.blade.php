@@ -8,21 +8,97 @@
 
         <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <a href="{{ route('admin.categories.index') }}"
-               class="px-4 py-2 rounded-xl border font-semibold hover:bg-gray-50 transition text-center">
+               class="btn-outline text-center">
                 Manage Categories
             </a>
 
             <a href="{{ route('admin.products.create') }}"
-               class="px-4 py-2 rounded-xl bg-black text-white font-semibold hover:opacity-90 transition text-center">
+               class="btn-primary text-center">
                 + Add Product
             </a>
         </div>
     </div>
 
-    <div class="bg-white border rounded-3xl shadow-sm overflow-hidden">
+    <div class="space-y-3 md:hidden">
+        @forelse($products as $product)
+            @php
+                $isAvailable = (bool) ($product->is_available ?? true);
+                $inStock = (int) ($product->stock ?? 0) > 0;
+            @endphp
+            <div class="glass-card p-4">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="font-semibold text-gray-900">{{ $product->name }}</div>
+                    <div class="shrink-0 rounded-xl bg-black text-white px-3 py-1 text-sm font-semibold">
+                        <x-money :amount="$product->price" />
+                    </div>
+                </div>
+
+                <div class="mt-3 grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                        <div class="meta-label">Stock</div>
+                        <div class="font-semibold text-gray-800">{{ $product->stock ?? 0 }}</div>
+                    </div>
+                    <div>
+                        <div class="meta-label">Views</div>
+                        <div class="font-semibold text-gray-800">{{ $product->views ?? 0 }}</div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <div class="meta-label mb-2">Categories</div>
+                    @if($product->categories->count())
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($product->categories as $cat)
+                                <span class="chip">
+                                    {{ $cat->name }}
+                                </span>
+                            @endforeach
+                        </div>
+                    @else
+                        <span class="text-sm text-gray-400">No category</span>
+                    @endif
+                </div>
+
+                <div class="mt-3">
+                    @if($isAvailable && $inStock)
+                        <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
+                            Available
+                        </span>
+                    @elseif(!$isAvailable)
+                        <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
+                            Hidden
+                        </span>
+                    @else
+                        <span class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-800">
+                            Out of stock
+                        </span>
+                    @endif
+                </div>
+
+                <div class="mt-4 flex items-center gap-4">
+                    <a href="{{ route('admin.products.edit', $product) }}" class="action-link">
+                        Edit
+                    </a>
+                    <form method="POST"
+                          action="{{ route('admin.products.destroy', $product) }}"
+                          onsubmit="return confirm('Delete this product?')">
+                        @csrf
+                        @method('DELETE')
+                        <button class="action-link-danger">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @empty
+            <div class="glass-card p-6 text-center text-gray-500">No products yet.</div>
+        @endforelse
+    </div>
+
+    <div class="admin-table-wrap">
         <div class="overflow-x-auto">
-        <table class="w-full min-w-[720px]">
-            <thead class="bg-gray-50">
+        <table class="admin-table min-w-[720px]">
+            <thead>
             <tr>
                 <th class="p-4 text-left">Product</th>
                 <th class="p-4 text-left">Categories</th>
@@ -40,7 +116,7 @@
                     $isAvailable = (bool) ($product->is_available ?? true);
                     $inStock = (int) ($product->stock ?? 0) > 0;
                 @endphp
-                <tr class="border-t">
+                <tr>
                     <td class="p-4 font-semibold">
                         {{ $product->name }}
                     </td>
@@ -49,7 +125,7 @@
                         @if($product->categories->count())
                             <div class="flex flex-wrap gap-2">
                                 @foreach($product->categories as $cat)
-                                    <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700">
+                                    <span class="chip">
                                         {{ $cat->name }}
                                     </span>
                                 @endforeach
@@ -90,7 +166,7 @@
                     <td class="p-4">
                         <div class="flex flex-wrap gap-4">
                             <a href="{{ route('admin.products.edit', $product) }}"
-                               class="font-semibold underline">
+                               class="action-link">
                                 Edit
                             </a>
 
@@ -99,7 +175,7 @@
                                   onsubmit="return confirm('Delete this product?')">
                                 @csrf
                                 @method('DELETE')
-                                <button class="font-semibold underline text-red-600">
+                                <button class="action-link-danger">
                                     Delete
                                 </button>
                             </form>

@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ReviewAdminController;
 use App\Http\Controllers\Admin\OrderRequestAdminController;
+use App\Http\Controllers\Admin\NotificationCenterController;
 
 /*
 |-------------------------------------------------------------------------- 
@@ -59,6 +60,13 @@ Route::middleware(['auth', 'admin', 'throttle:60,1'])->prefix('admin')->name('ad
     Route::put('order-requests/{orderRequest}', [OrderRequestAdminController::class, 'update'])->name('order-requests.update');
     Route::delete('order-requests/{orderRequest}', [OrderRequestAdminController::class, 'destroy'])->name('order-requests.destroy');
     Route::post('order-requests/bulk', [OrderRequestAdminController::class, 'bulk'])->name('order-requests.bulk');
+
+    Route::get('notifications', [NotificationCenterController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/read-all', [NotificationCenterController::class, 'markAllRead'])->name('notifications.read-all');
+    Route::post('notifications/{type}/{id}/read', [NotificationCenterController::class, 'markRead'])
+        ->whereIn('type', ['order', 'review'])
+        ->whereNumber('id')
+        ->name('notifications.read');
 });
 
 // ✅ SEO: Sitemap
