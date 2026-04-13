@@ -12,8 +12,8 @@ class CategoryPublicController extends Controller
         $categoryModel = Category::where('slug', $slug)->firstOrFail();
 
         $request->merge(['category' => $categoryModel->slug]);
-        $pageTitle = $categoryModel->name . ' | Market';
-        $metaDescription = 'Browse products in ' . $categoryModel->name . ' at Market.';
+        $pageTitle = $categoryModel->name . ' | Rasan Market';
+        $metaDescription = 'Browse products in ' . $categoryModel->name . ' at Rasan Market.';
 
         return app(ProductPublicController::class)->index($request)
             ->with([

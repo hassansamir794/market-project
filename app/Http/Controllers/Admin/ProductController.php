@@ -3,59 +3,45 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Cache;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('categories')->latest()->paginate(10);
+        $products = Product::with(['categories', 'images'])->latest()->paginate(10);
+
         return view('admin.products.index', compact('products'));
     }
 
     public function create()
     {
         $categories = Category::orderBy('name')->get();
-        
+
         return view('admin.products.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'stock' => ['required', 'integer', 'min:0'],
-            'is_available' => ['nullable', 'boolean'],
-            'description' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-
-            // ✅ categories validation
-            'category_ids' => ['nullable', 'array'],
-            'category_ids.*' => ['integer', 'exists:categories,id'],
-        ]);
-
+        $validated = $this->validateProduct($request);
         $validated['is_available'] = (bool) ($validated['is_available'] ?? false);
-
-        $rate = (float) config('currency.rate', 1);
-        $safeRate = $rate > 0 ? $rate : 1;
-        $validated['price'] = (float) $validated['price'] / $safeRate;
+        $validated['price'] = $this->normalizePrice((float) $validated['price']);
 
         if ($request->hasFile('image')) {
             $validated['image'] = $this->storeOptimizedImage($request->file('image'));
         }
 
         $product = Product::create($validated);
-
-        // ✅ attach categories
         $product->categories()->sync($request->input('category_ids', []));
 
-        Cache::forget('home.latest_products');
+        $this->syncGalleryAfterSave($product, $request);
+        $this->forgetProductCaches($product);
 
         return redirect()
             ->route('admin.products.index')
@@ -65,46 +51,56 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::orderBy('name')->get();
-        $product->load('categories');
+        $product->load(['categories', 'images']);
 
         return view('admin.products.edit', compact('product', 'categories'));
     }
 
     public function update(Request $request, Product $product)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'stock' => ['required', 'integer', 'min:0'],
-            'is_available' => ['nullable', 'boolean'],
-            'description' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-
-            // ✅ categories validation
-            'category_ids' => ['nullable', 'array'],
-            'category_ids.*' => ['integer', 'exists:categories,id'],
-        ]);
-
+        $validated = $this->validateProduct($request);
         $validated['is_available'] = (bool) ($validated['is_available'] ?? false);
+        $validated['price'] = $this->normalizePrice((float) $validated['price']);
 
-        $rate = (float) config('currency.rate', 1);
-        $safeRate = $rate > 0 ? $rate : 1;
-        $validated['price'] = (float) $validated['price'] / $safeRate;
+        $previousPrimaryImage = $product->image;
 
         if ($request->hasFile('image')) {
-            if ($product->image) {
-                $this->deleteImagePair($product->image);
+            if ($previousPrimaryImage) {
+                $this->deleteImageByPath($product, $previousPrimaryImage);
             }
+
             $validated['image'] = $this->storeOptimizedImage($request->file('image'));
         }
 
         $product->update($validated);
-
-        // ✅ sync categories
         $product->categories()->sync($request->input('category_ids', []));
 
-        Cache::forget('home.latest_products');
-        Cache::forget('product.show.' . $product->id);
+        $deleteImageIds = collect($request->input('delete_image_ids', []))
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->values()
+            ->all();
+
+        if ($deleteImageIds !== []) {
+            $imagesToDelete = $product->images()->whereIn('id', $deleteImageIds)->get();
+
+            foreach ($imagesToDelete as $image) {
+                $this->deleteImageRecord($image);
+            }
+        }
+
+        $this->syncGalleryAfterSave($product, $request);
+
+        $product->refresh();
+        $product->load('images');
+
+        $primaryPath = $product->images->first()?->path;
+
+        if ($product->image !== $primaryPath) {
+            $product->forceFill(['image' => $primaryPath])->save();
+        }
+
+        $this->forgetProductCaches($product);
 
         return redirect()
             ->route('admin.products.index')
@@ -113,21 +109,106 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        // detach categories first (clean)
         $product->categories()->detach();
 
-        if ($product->image) {
+        foreach ($product->images as $image) {
+            $this->deleteImagePair($image->path);
+        }
+
+        if ($product->image && $product->images->doesntContain(fn ($image) => $image->path === $product->image)) {
             $this->deleteImagePair($product->image);
         }
 
         $product->delete();
-
-        Cache::forget('home.latest_products');
-        Cache::forget('product.show.' . $product->id);
+        $this->forgetProductCaches($product);
 
         return redirect()
             ->route('admin.products.index')
             ->with('success', 'Product deleted successfully');
+    }
+
+    private function validateProduct(Request $request): array
+    {
+        return $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'price' => ['required', 'numeric', 'min:0'],
+            'stock' => ['required', 'integer', 'min:0'],
+            'is_available' => ['nullable', 'boolean'],
+            'description' => ['nullable', 'string'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'gallery_images' => ['nullable', 'array'],
+            'gallery_images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'delete_image_ids' => ['nullable', 'array'],
+            'delete_image_ids.*' => ['integer', 'exists:product_images,id'],
+            'category_ids' => ['nullable', 'array'],
+            'category_ids.*' => ['integer', 'exists:categories,id'],
+        ]);
+    }
+
+    private function syncGalleryAfterSave(Product $product, Request $request): void
+    {
+        $product->load('images');
+
+        if ($product->image && $product->images->doesntContain(fn ($image) => $image->path === $product->image)) {
+            ProductImage::create([
+                'product_id' => $product->id,
+                'path' => $product->image,
+                'sort_order' => 0,
+            ]);
+        }
+
+        if ($request->hasFile('gallery_images')) {
+            $nextOrder = (int) $product->images()->max('sort_order') + 1;
+
+            foreach ($request->file('gallery_images', []) as $file) {
+                $path = $this->storeOptimizedImage($file);
+
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'path' => $path,
+                    'sort_order' => $nextOrder,
+                ]);
+
+                if (! $product->image) {
+                    $product->forceFill(['image' => $path])->save();
+                }
+
+                $nextOrder++;
+            }
+        }
+    }
+
+    private function normalizePrice(float $price): float
+    {
+        $rate = (float) config('currency.rate', 1);
+        $safeRate = $rate > 0 ? $rate : 1;
+
+        return $price / $safeRate;
+    }
+
+    private function forgetProductCaches(Product $product): void
+    {
+        Cache::forget('home.latest_products');
+        Cache::forget('product.show.' . $product->id);
+    }
+
+    private function deleteImageByPath(Product $product, string $path): void
+    {
+        $imageRecord = $product->images()->where('path', $path)->first();
+
+        if ($imageRecord) {
+            $this->deleteImageRecord($imageRecord);
+
+            return;
+        }
+
+        $this->deleteImagePair($path);
+    }
+
+    private function deleteImageRecord(ProductImage $image): void
+    {
+        $this->deleteImagePair($image->path);
+        $image->delete();
     }
 
     private function storeOptimizedImage($uploadedFile): string
@@ -158,6 +239,7 @@ class ProductController extends Controller
         [$width, $height] = getimagesize($uploadedFile->getPathname());
         if (! $width || ! $height) {
             imagedestroy($source);
+
             return $uploadedFile->store('products', 'public');
         }
 

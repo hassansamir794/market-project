@@ -5,26 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrderRequest extends Model
+class ProductImage extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'product_id',
-        'name',
-        'phone',
-        'quantity',
-        'note',
-        'admin_note',
-        'status',
-        'admin_seen_at',
-        'status_updated_at',
+        'path',
+        'sort_order',
     ];
 
     protected $casts = [
-        'quantity' => 'integer',
-        'admin_seen_at' => 'datetime',
-        'status_updated_at' => 'datetime',
+        'sort_order' => 'integer',
     ];
 
     public function product()

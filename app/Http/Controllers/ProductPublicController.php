@@ -28,6 +28,7 @@ class ProductPublicController extends Controller
         });
 
         $productsQuery = Product::query()
+            ->with('images')
             ->when($q, function ($query) use ($q) {
                 $query->where(function ($sub) use ($q) {
                     $sub->where('name', 'like', '%' . $q . '%')
@@ -79,7 +80,7 @@ class ProductPublicController extends Controller
         $cacheKey = 'product.show.' . $product->id;
 
         $data = Cache::remember($cacheKey, 120, function () use ($product) {
-            $product->load('categories');
+            $product->load(['categories', 'images']);
             $reviewsQuery = $product->reviews()->where('is_approved', true);
             $averageRating = (float) $reviewsQuery->avg('rating');
             $reviews = $product->reviews()->where('is_approved', true)->latest()->take(10)->get();

@@ -4,7 +4,10 @@
 
 @section('content')
     <div class="mt-6 max-w-xl">
-        <a class="text-sm text-gray-600 hover:text-gray-900" href="{{ route('admin.categories.index') }}">Back</a>
+        <div class="flex flex-wrap gap-3">
+            <a class="btn-outline" href="{{ route('admin.categories.index') }}">Back to Categories</a>
+            <a class="btn-outline" href="{{ route('admin.dashboard') }}">Dashboard</a>
+        </div>
 
         <div class="mt-4 form-panel">
             <h1 class="text-xl font-bold mb-4">Add Category</h1>
@@ -20,10 +23,15 @@
             <form method="POST" action="{{ route('admin.categories.store') }}">
                 @csrf
 
-                <label class="field-label">Name</label>
-                <input class="input-clean" name="name" value="{{ old('name') }}" required>
+                <div>
+                    <label class="field-label">Name</label>
+                    <input class="input-clean" name="name" value="{{ old('name') }}" required>
+                </div>
 
-                <button class="mt-4 btn-primary">Save</button>
+                <div class="mt-4 flex flex-col sm:flex-row gap-3">
+                    <button class="btn-primary">Save</button>
+                    <a href="{{ route('admin.categories.index') }}" class="btn-outline">Cancel</a>
+                </div>
             </form>
         </div>
     </div>

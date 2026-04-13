@@ -5,9 +5,17 @@
 @section('content')
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <h1 class="text-2xl font-bold">Reviews</h1>
-        <a href="{{ route('admin.dashboard') }}" class="btn-outline">
-            Back to Dashboard
-        </a>
+        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <a href="{{ route('admin.order-requests.index') }}" class="btn-outline text-center">
+                Orders
+            </a>
+            <a href="{{ route('admin.notifications.index') }}" class="btn-outline text-center">
+                Notifications
+            </a>
+            <a href="{{ route('admin.dashboard') }}" class="btn-outline text-center">
+                Back to Dashboard
+            </a>
+        </div>
     </div>
 
     @if(session('success'))

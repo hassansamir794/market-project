@@ -25,7 +25,7 @@ class HomeController extends Controller
         });
 
         $latestProducts = Cache::remember('home.latest_products', 300, function () {
-            return Product::with('categories')
+            return Product::with(['categories', 'images'])
                 ->latest()
                 ->take(6)
                 ->get();

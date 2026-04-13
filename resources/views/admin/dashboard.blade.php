@@ -21,7 +21,7 @@
             <a href="{{ route('admin.notifications.index') }}" class="btn-outline text-center">
                 Notifications
                 @if(($stats['unread_notifications'] ?? 0) > 0)
-                    <span class="ml-1 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-xs min-w-[20px] h-5 px-1">
+                    <span class="ml-1 inline-flex items-center justify-center rounded-full bg-rose-600 text-white text-xs min-w-[20px] h-5 px-1">
                         {{ $stats['unread_notifications'] }}
                     </span>
                 @endif
@@ -55,11 +55,38 @@
         </div>
     </div>
 
+    <div class="mt-6 grid grid-cols-2 lg:grid-cols-6 gap-3">
+        <div class="glass-card p-4">
+            <div class="meta-label">New</div>
+            <div class="text-xl font-bold">{{ $orderStatusSummary['new'] ?? 0 }}</div>
+        </div>
+        <div class="glass-card p-4">
+            <div class="meta-label">Confirmed</div>
+            <div class="text-xl font-bold">{{ $orderStatusSummary['confirmed'] ?? 0 }}</div>
+        </div>
+        <div class="glass-card p-4">
+            <div class="meta-label">Preparing</div>
+            <div class="text-xl font-bold">{{ $orderStatusSummary['preparing'] ?? 0 }}</div>
+        </div>
+        <div class="glass-card p-4">
+            <div class="meta-label">Ready</div>
+            <div class="text-xl font-bold">{{ $orderStatusSummary['ready'] ?? 0 }}</div>
+        </div>
+        <div class="glass-card p-4">
+            <div class="meta-label">Delivered</div>
+            <div class="text-xl font-bold">{{ $orderStatusSummary['delivered'] ?? 0 }}</div>
+        </div>
+        <div class="glass-card p-4">
+            <div class="meta-label">Canceled</div>
+            <div class="text-xl font-bold">{{ $orderStatusSummary['canceled'] ?? 0 }}</div>
+        </div>
+    </div>
+
     <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="glass-card p-5">
+        <div class="glass-card p-5 panel-divider">
             <h2 class="text-lg font-semibold mb-4">Recent Order Requests</h2>
             @forelse($recentOrders as $order)
-                <div class="border-b py-3">
+                <div class="py-3">
                     <div class="font-semibold">{{ $order->name }} — {{ $order->phone }}</div>
                     <div class="text-sm text-gray-600">
                         Product: {{ $order->product?->name ?? 'N/A' }} | Qty: {{ $order->quantity }} | Status: {{ $order->status }}
@@ -73,10 +100,10 @@
             @endforelse
         </div>
 
-        <div class="glass-card p-5">
+        <div class="glass-card p-5 panel-divider">
             <h2 class="text-lg font-semibold mb-4">Top Viewed Products</h2>
             @forelse($topViewed as $product)
-                <div class="border-b py-3 flex items-center justify-between">
+                <div class="py-3 flex items-center justify-between">
                     <div class="font-semibold">{{ $product->name }}</div>
                     <div class="text-sm text-gray-600">{{ $product->views ?? 0 }} views</div>
                 </div>
@@ -86,12 +113,12 @@
         </div>
     </div>
 
-    <div class="mt-8 glass-card p-5">
+    <div class="mt-8 glass-card p-5 panel-divider">
         <h2 class="text-lg font-semibold mb-4">Low Stock</h2>
         @forelse($lowStock as $product)
-            <div class="border-b py-3 flex items-center justify-between">
+            <div class="py-3 flex items-center justify-between">
                 <div class="font-semibold">{{ $product->name }}</div>
-                <div class="text-sm text-red-600 font-semibold">{{ $product->stock ?? 0 }}</div>
+                <div class="text-sm text-rose-700 font-semibold">{{ $product->stock ?? 0 }}</div>
             </div>
         @empty
             <div class="text-gray-500">No low stock items.</div>
@@ -99,17 +126,17 @@
     </div>
 
     <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="glass-card p-5">
+        <div class="glass-card p-5 panel-divider">
             <h2 class="text-lg font-semibold mb-4">Unread Order Notifications</h2>
             @forelse($latestUnreadOrders as $order)
-                <div class="border-b py-3 flex items-start justify-between gap-3">
+                <div class="py-3 flex items-start justify-between gap-3">
                     <div>
                         <div class="font-semibold">{{ $order->name }}</div>
                         <div class="text-sm text-gray-600">{{ $order->product?->name ?? 'N/A' }} | Qty: {{ $order->quantity }}</div>
                     </div>
                     <form method="POST" action="{{ route('admin.notifications.read', ['type' => 'order', 'id' => $order->id]) }}">
                         @csrf
-                        <button class="text-sm font-semibold underline">Mark read</button>
+                        <button class="action-link">Mark read</button>
                     </form>
                 </div>
             @empty
@@ -117,17 +144,17 @@
             @endforelse
         </div>
 
-        <div class="glass-card p-5">
+        <div class="glass-card p-5 panel-divider">
             <h2 class="text-lg font-semibold mb-4">Unread Review Notifications</h2>
             @forelse($latestUnreadReviews as $review)
-                <div class="border-b py-3 flex items-start justify-between gap-3">
+                <div class="py-3 flex items-start justify-between gap-3">
                     <div>
                         <div class="font-semibold">{{ $review->name }} ({{ $review->rating }}/5)</div>
                         <div class="text-sm text-gray-600">{{ $review->product?->name ?? 'N/A' }}</div>
                     </div>
                     <form method="POST" action="{{ route('admin.notifications.read', ['type' => 'review', 'id' => $review->id]) }}">
                         @csrf
-                        <button class="text-sm font-semibold underline">Mark read</button>
+                        <button class="action-link">Mark read</button>
                     </form>
                 </div>
             @empty
@@ -137,11 +164,11 @@
     </div>
 
     <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="glass-card p-5">
+        <div class="glass-card p-5 panel-divider">
             <h2 class="text-lg font-semibold mb-1">Traffic Sources</h2>
             <p class="text-sm text-gray-600 mb-4">Last 30 days (since {{ $analyticsFrom->format('Y-m-d') }})</p>
             @forelse($trafficSources as $source)
-                <div class="border-b py-3 flex items-center justify-between">
+                <div class="py-3 flex items-center justify-between">
                     <div class="font-semibold capitalize">{{ $source->source }}</div>
                     <div class="text-sm text-gray-600">{{ number_format((int) $source->total) }} visits</div>
                 </div>
@@ -150,11 +177,11 @@
             @endforelse
         </div>
 
-        <div class="glass-card p-5">
+        <div class="glass-card p-5 panel-divider">
             <h2 class="text-lg font-semibold mb-1">Top Search Keywords</h2>
             <p class="text-sm text-gray-600 mb-4">Most used search terms</p>
             @forelse($topKeywords as $keyword)
-                <div class="border-b py-3 flex items-center justify-between gap-3">
+                <div class="py-3 flex items-center justify-between gap-3">
                     <div class="font-semibold break-all">{{ $keyword->keyword }}</div>
                     <div class="text-sm text-gray-600 whitespace-nowrap">{{ number_format((int) $keyword->count) }} searches</div>
                 </div>

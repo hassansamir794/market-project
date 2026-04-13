@@ -16,30 +16,29 @@
         })();
     </script>
 </head>
-<body class="min-h-screen text-gray-900 antialiased">
+<body class="page-shell min-h-screen text-gray-900 antialiased">
     <div class="fixed inset-0 -z-10 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-gray-950 via-gray-900 to-gray-700"></div>
-        <div class="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-white/10 blur-3xl"></div>
-        <div class="absolute -bottom-16 -right-12 h-72 w-72 rounded-full bg-blue-300/20 blur-3xl"></div>
-        <div class="absolute inset-0 bg-black/20"></div>
+        <div class="absolute inset-0 page-overlay"></div>
+        <div class="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-white/35 blur-3xl"></div>
+        <div class="absolute -bottom-16 -right-12 h-72 w-72 rounded-full bg-emerald-200/25 blur-3xl"></div>
     </div>
 
     <div class="min-h-screen flex items-center justify-center p-4">
         <div class="w-full max-w-md">
-            <div class="mb-6 text-center text-white">
+            <div class="mb-6 text-center">
                 <a href="{{ route('home') }}" class="inline-flex items-center gap-3">
-                    <img src="{{ asset('images/logo.jpg') }}" alt="Market logo" class="h-10 w-10 rounded-xl object-cover ring-2 ring-white/30">
+                    <img src="{{ asset('images/logo.jpg') }}" alt="Rasan Market logo" class="h-11 w-11 rounded-2xl object-cover ring-1 ring-white/70 shadow-sm">
                     <span class="text-xl font-bold tracking-tight">{{ __('messages.brand') }}</span>
                 </a>
-                <p class="mt-2 text-sm text-white/80">Secure access to your market account</p>
+                <p class="mt-2 text-sm">Secure access to your market account</p>
                 <div class="mt-3">
-                    <button type="button" data-theme-toggle class="theme-toggle-btn px-3 py-2 rounded-lg border border-gray-300 text-xs font-semibold">
+                    <button type="button" data-theme-toggle class="theme-toggle-btn px-3 py-2 text-xs font-semibold">
                         Dark
                     </button>
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-white/35 bg-white/92 p-6 shadow-[0_18px_36px_rgba(2,6,23,0.24)] backdrop-blur-xl">
+            <div class="form-panel">
                 {{ $slot }}
             </div>
         </div>

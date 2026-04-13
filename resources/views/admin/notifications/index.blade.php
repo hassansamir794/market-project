@@ -19,6 +19,12 @@
                     Mark All Read
                 </button>
             </form>
+            <a href="{{ route('admin.order-requests.index') }}" class="btn-outline text-center">
+                Orders
+            </a>
+            <a href="{{ route('admin.reviews.index') }}" class="btn-outline text-center">
+                Reviews
+            </a>
             <a href="{{ route('admin.dashboard') }}" class="btn-outline text-center">
                 Back to Dashboard
             </a>

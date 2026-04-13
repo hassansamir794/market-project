@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'About | Market')
-@section('meta_description', 'Find Market address, opening hours, and contact details.')
+@section('title', __('messages.about_title') . ' | Rasan Market')
+@section('meta_description', __('messages.about_meta_description'))
 
 @section('content')
     @php
@@ -19,15 +19,14 @@
             <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">{{ __('messages.about_title') }}</h1>
 
             <p class="mt-4 text-gray-700 leading-relaxed">
-                Welcome to <span class="font-semibold">Market</span>.
-                We provide quality products with clear pricing and a simple shopping experience.
+                {{ __('messages.about_intro') }}
             </p>
 
             <div class="mt-6 glass-card p-4 bg-white/70">
                 <div class="text-sm font-semibold text-gray-900">{{ __('messages.address') }}</div>
                 <div class="mt-1 text-gray-700">
-                    Rasan Market<br>
-                    Direct street to Barzan
+                    {{ __('messages.address_line_1') }}<br>
+                    {{ __('messages.address_line_2') }}
                 </div>
 
                 <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
@@ -66,10 +65,18 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                    @foreach(['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as $day)
+                    @foreach([
+                        __('messages.day_saturday'),
+                        __('messages.day_sunday'),
+                        __('messages.day_monday'),
+                        __('messages.day_tuesday'),
+                        __('messages.day_wednesday'),
+                        __('messages.day_thursday'),
+                        __('messages.day_friday'),
+                    ] as $day)
                         <div class="flex items-center justify-between glass-card p-3 bg-white/70">
                             <span class="font-medium">{{ $day }}</span>
-                            <span class="text-gray-700 font-semibold">9:00 AM - 1:00 AM</span>
+                            <span class="text-gray-700 font-semibold">{{ __('messages.daily_hours') }}</span>
                         </div>
                     @endforeach
                 </div>

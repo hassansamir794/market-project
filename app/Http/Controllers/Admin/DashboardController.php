@@ -28,6 +28,10 @@ class DashboardController extends Controller
             ->take(8)
             ->get();
 
+        $orderStatusSummary = OrderRequest::selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
         $topViewed = Product::orderBy('views', 'desc')
             ->take(6)
             ->get();
@@ -77,7 +81,8 @@ class DashboardController extends Controller
             'latestUnreadReviews',
             'trafficSources',
             'topKeywords',
-            'analyticsFrom'
+            'analyticsFrom',
+            'orderStatusSummary'
         ));
     }
 }

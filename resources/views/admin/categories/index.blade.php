@@ -5,9 +5,17 @@
 @section('content')
     <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mt-6 mb-6">
         <h1 class="text-2xl font-bold">Categories</h1>
-        <a href="{{ route('admin.categories.create') }}" class="btn-primary text-center">
-            + Add Category
-        </a>
+        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <a href="{{ route('admin.dashboard') }}" class="btn-outline text-center">
+                Back to Dashboard
+            </a>
+            <a href="{{ route('admin.products.index') }}" class="btn-outline text-center">
+                Manage Products
+            </a>
+            <a href="{{ route('admin.categories.create') }}" class="btn-primary text-center">
+                + Add Category
+            </a>
+        </div>
     </div>
 
     <div class="space-y-3 md:hidden">
@@ -28,6 +36,17 @@
         @empty
             <div class="glass-card p-6 text-center text-gray-500">No categories yet.</div>
         @endforelse
+    </div>
+
+    <div class="mt-6 glass-card p-4">
+        <div class="font-semibold text-gray-900">Quick Links</div>
+        <div class="mt-3 flex flex-wrap gap-3">
+            <a href="{{ route('admin.dashboard') }}" class="btn-outline">Dashboard</a>
+            <a href="{{ route('admin.products.index') }}" class="btn-outline">Products</a>
+            <a href="{{ route('admin.order-requests.index') }}" class="btn-outline">Orders</a>
+            <a href="{{ route('admin.reviews.index') }}" class="btn-outline">Reviews</a>
+            <a href="{{ route('admin.notifications.index') }}" class="btn-outline">Notifications</a>
+        </div>
     </div>
 
     <div class="admin-table-wrap">
