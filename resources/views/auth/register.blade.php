@@ -1,9 +1,15 @@
 <x-guest-layout>
     <form method="POST" action="{{ route('register') }}">
         @csrf
+        <x-honeypot-fields />
 
         <h1 class="text-2xl font-bold tracking-tight text-gray-900">{{ __('messages.auth_register_title') }}</h1>
         <p class="mt-1 text-sm text-gray-600">{{ __('messages.auth_register_subtitle') }}</p>
+
+        <div class="mt-5 surface-muted rounded-2xl border p-4">
+            <div class="text-sm font-semibold text-gray-900">{{ __('messages.auth_register_note_title') }}</div>
+            <p class="mt-1 text-sm text-gray-600">{{ __('messages.auth_register_note_text') }}</p>
+        </div>
 
         <div>
             <x-input-label for="name" :value="__('messages.label_name')" class="mt-5" />

@@ -40,10 +40,10 @@ Route::get('products', [ProductPublicController::class, 'index'])->name('product
 Route::get('products/{product}', [ProductPublicController::class, 'show'])->name('products.show')->middleware('throttle:120,1');
 Route::get('categories/{slug}', [CategoryPublicController::class, 'show'])->name('categories.show')->middleware('throttle:60,1');
 Route::post('products/{product}/reviews', [ReviewController::class, 'store'])
-    ->middleware('throttle:10,1')
+    ->middleware(['throttle:10,1', 'honeypot'])
     ->name('products.reviews.store');
 Route::post('products/{product}/order-requests', [OrderRequestController::class, 'store'])
-    ->middleware('throttle:10,1')
+    ->middleware(['throttle:10,1', 'honeypot'])
     ->name('products.order-requests.store');
 
 // ✅ Admin area - login + admin only

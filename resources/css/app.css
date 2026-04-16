@@ -1276,62 +1276,62 @@
     color: var(--text-on-accent);
 }
 
-body:not(.theme-dark) .form-panel {
+html:not(.theme-dark) .form-panel {
     background: var(--bg-surface);
     border-color: var(--border-soft);
 }
 
-body:not(.theme-dark) .admin-table-wrap,
-body:not(.theme-dark) .table-polished {
+html:not(.theme-dark) .admin-table-wrap,
+html:not(.theme-dark) .table-polished {
     background: var(--bg-surface);
     border-color: var(--border-soft);
 }
 
-body:not(.theme-dark) .admin-table thead th {
+html:not(.theme-dark) .admin-table thead th {
     background: rgba(116, 97, 71, 0.06);
     color: var(--text-muted);
 }
 
-body:not(.theme-dark) .admin-table tbody tr:hover {
+html:not(.theme-dark) .admin-table tbody tr:hover {
     background: rgba(116, 97, 71, 0.04);
 }
 
-body:not(.theme-dark) .input-clean,
-body:not(.theme-dark) .select-clean,
-body:not(.theme-dark) .textarea-clean {
+html:not(.theme-dark) .input-clean,
+html:not(.theme-dark) .select-clean,
+html:not(.theme-dark) .textarea-clean {
     background: rgba(255, 255, 255, 0.86) !important;
     color: var(--text-main) !important;
     border-color: var(--border-strong) !important;
 }
 
-body:not(.theme-dark) .input-clean::placeholder,
-body:not(.theme-dark) .textarea-clean::placeholder {
+html:not(.theme-dark) .input-clean::placeholder,
+html:not(.theme-dark) .textarea-clean::placeholder {
     color: var(--text-muted);
 }
 
-body:not(.theme-dark) .glass-card input:not([type='checkbox']):not([type='radio']):not([type='file']),
-body:not(.theme-dark) .glass-card select,
-body:not(.theme-dark) .glass-card textarea,
-body:not(.theme-dark) .form-panel input:not([type='checkbox']):not([type='radio']):not([type='file']),
-body:not(.theme-dark) .form-panel select,
-body:not(.theme-dark) .form-panel textarea {
+html:not(.theme-dark) .glass-card input:not([type='checkbox']):not([type='radio']):not([type='file']),
+html:not(.theme-dark) .glass-card select,
+html:not(.theme-dark) .glass-card textarea,
+html:not(.theme-dark) .form-panel input:not([type='checkbox']):not([type='radio']):not([type='file']),
+html:not(.theme-dark) .form-panel select,
+html:not(.theme-dark) .form-panel textarea {
     background: rgba(255, 255, 255, 0.86) !important;
     color: var(--text-main) !important;
     border-color: var(--border-strong) !important;
 }
 
-body:not(.theme-dark) input[type='checkbox'],
-body:not(.theme-dark) input[type='radio'] {
+html:not(.theme-dark) input[type='checkbox'],
+html:not(.theme-dark) input[type='radio'] {
     accent-color: var(--bg-accent);
     border-color: var(--border-strong);
 }
 
-body:not(.theme-dark) .btn-primary {
+html:not(.theme-dark) .btn-primary {
     color: var(--text-on-accent) !important;
     background: linear-gradient(135deg, #2f5d50, #3c7665);
 }
 
-body:not(.theme-dark) .btn-outline {
+html:not(.theme-dark) .btn-outline {
     color: var(--text-soft);
     background: rgba(255, 255, 255, 0.76);
     border-color: var(--border-strong);

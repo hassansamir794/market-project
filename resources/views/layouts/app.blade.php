@@ -26,7 +26,7 @@
     <meta name="twitter:description" content="@yield('meta_description', 'Rasan Market with clear product prices, categories, and fast local browsing.')">
     <meta name="twitter:image" content="@yield('meta_image', asset('images/logo.jpg'))">
     <link rel="canonical" href="{{ url()->current() }}">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {!! app(\App\Support\ViteAssetResolver::class)->tags(['resources/css/app.css', 'resources/js/app.js']) !!}
     <script>
         (function () {
             const savedTheme = localStorage.getItem('theme');

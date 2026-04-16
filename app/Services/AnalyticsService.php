@@ -4,11 +4,17 @@ namespace App\Services;
 
 use App\Models\SearchKeyword;
 use App\Models\TrafficVisit;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use Throwable;
 
 class AnalyticsService
 {
+    private static ?bool $trafficVisitsTableExists = null;
+
+    private static ?bool $searchKeywordsTableExists = null;
+
     public static function trackVisit(Request $request): void
     {
         if ($request->method() !== 'GET') {
@@ -24,18 +30,22 @@ class AnalyticsService
             return;
         }
 
-        if (! Schema::hasTable('traffic_visits')) {
+        if (! self::tableExists('traffic_visits')) {
             return;
         }
 
         $refererHost = parse_url((string) $request->headers->get('referer'), PHP_URL_HOST);
         $source = self::classifySource($refererHost ? (string) $refererHost : null);
 
-        TrafficVisit::create([
-            'source' => $source,
-            'referer_host' => $refererHost ?: null,
-            'path' => '/' . $path,
-        ]);
+        try {
+            TrafficVisit::create([
+                'source' => $source,
+                'referer_host' => $refererHost ?: null,
+                'path' => '/' . $path,
+            ]);
+        } catch (Throwable $exception) {
+            report($exception);
+        }
     }
 
     public static function trackSearch(?string $query): void
@@ -45,14 +55,37 @@ class AnalyticsService
             return;
         }
 
-        if (! Schema::hasTable('search_keywords')) {
+        if (! self::tableExists('search_keywords')) {
             return;
         }
 
-        $record = SearchKeyword::firstOrNew(['keyword' => $keyword]);
-        $record->count = (int) $record->count + 1;
-        $record->last_searched_at = now();
-        $record->save();
+        try {
+            $record = SearchKeyword::firstOrNew(['keyword' => $keyword]);
+            $record->count = (int) $record->count + 1;
+            $record->last_searched_at = now();
+            $record->save();
+        } catch (Throwable $exception) {
+            report($exception);
+        }
+    }
+
+    private static function tableExists(string $table): bool
+    {
+        $property = $table === 'traffic_visits'
+            ? 'trafficVisitsTableExists'
+            : 'searchKeywordsTableExists';
+
+        if (self::${$property} !== null) {
+            return self::${$property};
+        }
+
+        try {
+            return self::${$property} = Schema::hasTable($table);
+        } catch (QueryException|Throwable $exception) {
+            report($exception);
+
+            return self::${$property} = false;
+        }
     }
 
     private static function classifySource(?string $host): string
@@ -78,4 +111,3 @@ class AnalyticsService
         return 'referral';
     }
 }
-

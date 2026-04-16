@@ -253,6 +253,7 @@
 
             <form class="mt-5 space-y-4" method="POST" action="{{ route('products.order-requests.store', $product) }}">
                 @csrf
+                <x-honeypot-fields />
                 <div class="order-form-grid">
                     <div>
                         <label class="field-label">{{ __('messages.your_name') }}</label>
@@ -300,6 +301,7 @@
 
                 <form class="mt-4 space-y-4" method="POST" action="{{ route('products.reviews.store', $product) }}">
                     @csrf
+                    <x-honeypot-fields />
                     <div>
                         <label class="field-label">{{ __('messages.your_name') }}</label>
                         <input class="input-clean" name="name" value="{{ old('name') }}" required>

@@ -32,15 +32,15 @@
             </label>
         </div>
 
-        <div class="mt-5 flex items-center justify-between">
+        <div class="auth-links">
             @if (Route::has('register'))
-                <a class="text-sm font-semibold text-gray-700 hover:text-gray-900" href="{{ route('register') }}">
+                <a class="auth-link-chip" href="{{ route('register') }}">
                     {{ __('messages.auth_create_account') }}
                 </a>
             @endif
 
             @if (Route::has('password.request'))
-                <a class="text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none" href="{{ route('password.request') }}">
+                <a class="auth-link-chip" href="{{ route('password.request') }}">
                     {{ __('messages.auth_forgot_password') }}
                 </a>
             @endif
